@@ -1551,6 +1551,52 @@ class DolphinAdapter(OpenOrcaAdapter):
         return get_conv_template("dolphin-2.2.1-mistral-7b")
 
 
+from transformers import BitsAndBytesConfig 
+from peft import PeftModel
+
+# Load 4-bit quantized model
+def load_bnb_4bit_model(modelpath, use_flash_attention_2=False) :
+    model = AutoModelForCausalLM.from_pretrained(
+        modelpath,  
+        low_cpu_mem_usage=True,  
+        device_map="auto",
+        quantization_config=BitsAndBytesConfig(
+            load_in_4bit=True,
+            bnb_4bit_compute_dtype=torch.bfloat16,
+            bnb_4bit_quant_type="nf4",
+            bnb_4bit_use_double_quant=True, # double quant config : test
+        ),
+        torch_dtype=torch.bfloat16,
+        cache_dir="./camillo_model_cache",
+        use_flash_attention_2=use_flash_attention_2,
+
+    )
+    return model
+
+class CamilloAdapter(BaseModelAdapter):
+    """Model adapter for Camillo"""
+    use_fast_tokenizer = False
+
+    def match(self, model_path: str):
+        return model_path.lower =="camillo_dataset_oast_top1_ft_ehartforddolphin_23122".lower()
+
+    def get_default_conv_template(self, model_path: str) -> Conversation:
+        return get_conv_template("camillo_dataset_oast_top1_ft_ehartforddolphin_23122")
+    
+    
+    def load_model(self, model_path: str, from_pretrained_kwargs: dict):
+        # Load 4-bit quantized model
+        base_model_name = "ehartford/dolphin-2.2.1-mistral-7b"
+        adaptor_name = model_path
+        quantised_model = load_bnb_4bit_model(base_model_name) #this needs to be the same quantisation as we trained with. 
+        ft_model = PeftModel.from_pretrained(quantised_model, adaptor_name)
+
+        model = ft_model.eval()
+        tokenizer = AutoTokenizer.from_pretrained(base_model_name, use_fast=self.use_fast_tokenizer)       
+
+        return model, tokenizer
+
+
 class Hermes2Adapter(BaseModelAdapter):
     """Model adapter for teknium/OpenHermes-2.5-Mistral-7B and teknium/OpenHermes-2-Mistral-7B models"""
 
