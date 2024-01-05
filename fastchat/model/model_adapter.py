@@ -123,6 +123,7 @@ def register_model_adapter(cls):
 def get_model_adapter(model_path: str) -> BaseModelAdapter:
     """Get a model adapter for a model_path."""
     model_path_basename = os.path.basename(os.path.normpath(model_path))
+    print(f'Get a model adapter for a model_path. {model_path_basename}' )
 
     # Try the basename of model_path at first
     for adapter in model_adapters:
@@ -1558,7 +1559,6 @@ from peft import PeftModel
 def load_bnb_4bit_model(modelpath, use_flash_attention_2=False) :
     model = AutoModelForCausalLM.from_pretrained(
         modelpath,  
-        low_cpu_mem_usage=True,  
         device_map="auto",
         quantization_config=BitsAndBytesConfig(
             load_in_4bit=True,
@@ -1576,20 +1576,22 @@ def load_bnb_4bit_model(modelpath, use_flash_attention_2=False) :
 class CamilloAdapter(BaseModelAdapter):
     """Model adapter for Camillo"""
     use_fast_tokenizer = False
-
     def match(self, model_path: str):
-        return model_path.lower =="camillo_dataset_oast_top1_ft_ehartforddolphin_23122".lower()
-
+        result =  model_path.lower() =="camillo_dataset_oast_top1_ft_ehartforddolphin_23122".lower()
+        print(f'{model_path} match for camillo?  {result}')
+        return result
     def get_default_conv_template(self, model_path: str) -> Conversation:
         return get_conv_template("camillo_dataset_oast_top1_ft_ehartforddolphin_23122")
     
     
     def load_model(self, model_path: str, from_pretrained_kwargs: dict):
+        print("wgm : loading camillo adapter model   ")
         # Load 4-bit quantized model
         base_model_name = "ehartford/dolphin-2.2.1-mistral-7b"
         adaptor_name = model_path
         quantised_model = load_bnb_4bit_model(base_model_name) #this needs to be the same quantisation as we trained with. 
-        ft_model = PeftModel.from_pretrained(quantised_model, adaptor_name)
+        ft_model = PeftModel.from_pretrained(quantised_model, adaptor_name, device_map="auto")
+
 
         model = ft_model.eval()
         tokenizer = AutoTokenizer.from_pretrained(base_model_name, use_fast=self.use_fast_tokenizer)       

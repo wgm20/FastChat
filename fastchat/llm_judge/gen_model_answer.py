@@ -121,7 +121,7 @@ def get_model_answers(
                 # some models may error out when generating long outputs
                 try:
                     output_ids = model.generate(
-                        torch.as_tensor(input_ids).cuda(),
+                        input_ids=torch.as_tensor(input_ids).cuda(device="cuda"),
                         do_sample=do_sample,
                         temperature=temperature,
                         max_new_tokens=max_new_token,
@@ -170,6 +170,7 @@ def get_model_answers(
                         output = output.replace("Assistant:", "", 1).strip()
                 except RuntimeError as e:
                     print("ERROR question ID: ", question["question_id"])
+                    print(e)
                     output = "ERROR"
 
                 conv.update_last_message(output)
