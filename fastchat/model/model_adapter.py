@@ -128,11 +128,13 @@ def get_model_adapter(model_path: str) -> BaseModelAdapter:
     # Try the basename of model_path at first
     for adapter in model_adapters:
         if adapter.match(model_path_basename) and type(adapter) != BaseModelAdapter:
+            print(f'matched adapter: {type(adapter)}')
             return adapter
 
     # Then try the full path
     for adapter in model_adapters:
         if adapter.match(model_path):
+            print(f'matched adapter: {type(adapter)}')
             return adapter
 
     raise ValueError(f"No valid model adapter for {model_path}")
@@ -1546,7 +1548,7 @@ class DolphinAdapter(OpenOrcaAdapter):
     """Model adapter for ehartford/dolphin-2.2.1-mistral-7b"""
 
     def match(self, model_path: str):
-        return "dolphin" in model_path.lower() and "mistral" in model_path.lower()
+        return (("dolphin" in model_path.lower() and "mistral" in model_path.lower()) | (model_path.lower() == "MistralTrix-v1".lower()))
 
     def get_default_conv_template(self, model_path: str) -> Conversation:
         return get_conv_template("dolphin-2.2.1-mistral-7b")
