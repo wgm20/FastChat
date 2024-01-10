@@ -1544,11 +1544,25 @@ class OpenOrcaAdapter(BaseModelAdapter):
         return get_conv_template("open-orca")
 
 
+class Chatml_dpo_pairs_Adapter(OpenOrcaAdapter):
+    """Model adapter for ehartford/dolphin-2.2.1-mistral-7b"""
+
+    def match(self, model_path: str):
+        return ((model_path.lower() == "MistralTrix-v1".lower()) | 
+                (model_path.lower() == "mistral-7b_dolphin_orca_wgm_dpo_bf16_adp".lower()) |
+                (model_path.lower() == "NeuralMarcoro14-7B".lower()) 
+                )
+
+    def get_default_conv_template(self, model_path: str) -> Conversation:
+        return get_conv_template("chatml_dpo_pairs")
+
+
+
 class DolphinAdapter(OpenOrcaAdapter):
     """Model adapter for ehartford/dolphin-2.2.1-mistral-7b"""
 
     def match(self, model_path: str):
-        return (("dolphin" in model_path.lower() and "mistral" in model_path.lower()) | (model_path.lower() == "MistralTrix-v1".lower()))
+        return ("dolphin" in model_path.lower() and "mistral" in model_path.lower()) 
 
     def get_default_conv_template(self, model_path: str) -> Conversation:
         return get_conv_template("dolphin-2.2.1-mistral-7b")
@@ -2171,6 +2185,7 @@ register_model_adapter(StarChatAdapter)
 register_model_adapter(Llama2Adapter)
 register_model_adapter(CuteGPTAdapter)
 register_model_adapter(OpenOrcaAdapter)
+register_model_adapter(Chatml_dpo_pairs_Adapter)
 register_model_adapter(DolphinAdapter)
 register_model_adapter(Hermes2Adapter)
 register_model_adapter(MistralAdapter)

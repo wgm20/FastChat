@@ -1078,6 +1078,17 @@ register_conv_template(
     )
 )
 
+register_conv_template(
+    Conversation(
+        name="chatml_dpo_pairs",
+        system_template="<|im_start|>system\n{system_message}",
+        system_message="You are an AI assistant. User will you give you a task. Your goal is to complete the task as faithfully as you can. While performing the task think step-by-step and justify your steps.",
+        roles=("<|im_start|>user", "<|im_start|>assistant"),
+        sep_style=SeparatorStyle.CHATML,
+        sep="<|im_end|>",
+        stop_token_ids=[32000, 32001],
+    )
+)
 
 
 register_conv_template(
