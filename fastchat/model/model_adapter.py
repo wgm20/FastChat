@@ -1549,7 +1549,7 @@ class Chatml_dpo_pairs_Adapter(OpenOrcaAdapter):
 
     def match(self, model_path: str):
         return ((model_path.lower() == "MistralTrix-v1".lower()) | 
-                (model_path.lower() == "mistral-7b_dolphin_orca_wgm_dpo_bf16_adp".lower()) |
+                (model_path.lower() == "mistral-7b_dolphin_orca_wgm_dpo_bf16".lower()) |
                 (model_path.lower() == "NeuralMarcoro14-7B".lower()) 
                 )
 
