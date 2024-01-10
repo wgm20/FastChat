@@ -1548,10 +1548,9 @@ class Chatml_dpo_pairs_Adapter(OpenOrcaAdapter):
     """Model adapter for ehartford/dolphin-2.2.1-mistral-7b"""
 
     def match(self, model_path: str):
-        return ((model_path.lower() == "MistralTrix-v1".lower()) | 
-                (model_path.lower() == "mistral-7b_dolphin_orca_wgm_dpo_bf16".lower()) |
-                (model_path.lower() == "mistral-7b_dolphin_orca_wgm_dpo_bf16_adp".lower()) |
-                (model_path.lower() == "NeuralMarcoro14-7B".lower()) 
+        return ((model_path.lower() == "mistral-7b_dolphin_orca_wgm_dpo_bf16".lower()) |  #this is worse.
+                (model_path.lower() == "mistral-7b_dolphin_orca_wgm_dpo_bf16_adp2".lower()) #|
+                #(model_path.lower() == "NeuralMarcoro14-7B".lower()) 
                 )
 
     def get_default_conv_template(self, model_path: str) -> Conversation:
@@ -1563,7 +1562,9 @@ class DolphinAdapter(OpenOrcaAdapter):
     """Model adapter for ehartford/dolphin-2.2.1-mistral-7b"""
 
     def match(self, model_path: str):
-        return ("dolphin" in model_path.lower() and "mistral" in model_path.lower()) 
+        return (("dolphin" in model_path.lower() and "mistral" in model_path.lower()) | 
+                (model_path.lower() == "NeuralMarcoro14-7B".lower()) |
+                (model_path.lower() == "NeuralMarcoro14-7B_dol_adp".lower())  )
 
     def get_default_conv_template(self, model_path: str) -> Conversation:
         return get_conv_template("dolphin-2.2.1-mistral-7b")
