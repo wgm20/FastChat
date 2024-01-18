@@ -10,8 +10,17 @@ if [ -z "$MODEL_NAME" ]; then
     exit 1
 fi
 
+# Ask the user for the OpenAI API key
+echo "Please enter your OpenAI API key:"
+read -s OPENAI_API_KEY  # '-s' flag hides the input for privacy
+
+# Check if OPENAI_API_KEY is set
+if [ -z "$OPENAI_API_KEY" ]; then
+    echo "Error: OPENAI_API_KEY is not set."
+    exit 1
+fi
+
 # Navigate to the desired directory in one step (adjust the path as needed)
-# assumes we are in the directory the file is in and venv is a the same level as this is checked out to. 
 cd ./../../venv/bin/ || exit
 
 # Activate the environment
@@ -20,10 +29,11 @@ source activate || exit
 # Return to the llm_judge directory
 cd ../../FastChat/fastchat/llm_judge || exit
 
+# Export the OpenAI API key
+export OPENAI_API_KEY
+
 # Run the model answer generation
 python gen_model_answer.py --model-path camilloai/${MODEL_NAME} --model-id ${MODEL_NAME} --dtype bfloat16 || exit
-
-# need openai key here. 
 
 # Run the judgment script
 python gen_judgment.py --model-list ${MODEL_NAME} --parallel 2 || exit
