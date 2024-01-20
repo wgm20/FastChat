@@ -1564,6 +1564,7 @@ class DolphinAdapter(OpenOrcaAdapter):
     def match(self, model_path: str):
         return (("dolphin" in model_path.lower() and "mistral" in model_path.lower()) | 
                 ("camillo_DPO".lower() in model_path.lower()) |
+                ("Cargen-".lower() in model_path.lower()) |
                 (model_path.lower() == "NeuralMarcoro14-7B".lower()) |
                 (model_path.lower() == "NeuralMarcoro14-7B_dol_adp".lower())  )
 
